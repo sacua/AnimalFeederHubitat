@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Cat Feeder", namespace: "sacua", author: "Samuel Cuerrier Auclair") {
+    definition (name: "Animal Feeder", namespace: "sacua", author: "Samuel Cuerrier Auclair") {
         capability "Actuator"
         
         attribute "response", "string"
