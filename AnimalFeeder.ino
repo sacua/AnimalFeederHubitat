@@ -9,7 +9,7 @@ ESP8266WebServer server(80);
 // HX711 circuit wiring
 const int LOADCELL_DOUT_PIN = 0;
 const int LOADCELL_SCK_PIN = 5;
-float calibration_factor = 460.2;
+float calibration_factor = 1;
 String feedSuccess = "";
 
 HX711 scale;
@@ -33,7 +33,6 @@ void handleSentVar() {
       myservo.write(95); //close
       delay(100);
       weight = scale.get_units();
-      Serial.println(weight);
       runtime = millis() - currenttime;
     }
     if (runtime < 60000) {
@@ -43,17 +42,25 @@ void handleSentVar() {
     }
     myservo.detach(); //To ensure that the servo applied no torque while in rest and reduce power consumption
     scale.power_down(); //Reduce power consumption
-  }
-  if (server.hasArg("servo")) { // this is the variable sent from the client
+  
+  } else if (server.hasArg("servo")) { // this is the variable sent from the client
     int servopos = server.arg("servo").toInt();
     server.send(200, "text/html", "Data received");
     myservo.attach(4,900,2100);  // attaches the servo on GIO2 to the servo object
     myservo.write(servopos);
     delay(200);
     myservo.detach();
-  }
-  if (server.hasArg("feedSuccess")) { // this is the variable sent from the client
+ 
+  } else if (server.hasArg("feedSuccess")) { // this is the variable sent from the client
     server.send(200, "text/html", feedSuccess);
+  
+  } else if (server.hasArg("readweight")) { // this is the variable sent from the client
+    scale.power_up();
+    delay(500);
+    int reading = scale.read_average(10);
+    String weight = String(reading);
+    server.send(200, "text/html", weight);
+    scale.power_down(); //Reduce power consumption
   }
 }
 
