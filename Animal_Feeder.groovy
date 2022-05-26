@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Animal Feeder", namespace: "sacua", author: "Samuel Cuerrier Auclair") {
+    definition (name: "Cat-Dog Feeder", namespace: "sacua", author: "Samuel Cuerrier Auclair") {
         capability "Actuator"
         
         attribute "response", "string"
@@ -14,6 +14,8 @@ metadata {
     }
     preferences {
         input name: "IPAddress", type: "string", title: "IP Address of the ESP device", required: true, defaultValue: "192.168.0.157"
+        input name: "servoclose", type: "number", title: "Close position of the servo", required: true, defaultValue: "95"
+        input name: "servoopen", type: "number", title: "Open position of the servo", required: true, defaultValue: "75"
     }
 }
 
@@ -27,7 +29,7 @@ def GiveFood(foodWeight) {
         weightfood = foodWeight as float
         String foodweight = (weightfood * state.calibrationFactor).toString();
         
-        def params = [uri: "http://"+ IPAddress + "/data/?food_weight=" + foodweight]
+        def params = [uri: "http://"+ IPAddress + "/data/?food_weight=" + foodweight + "&openpos=" + servoopen.toString() + "&closepos=" + servoclose.toString()]
         
         httpGet(params) { resp ->
             if (resp.success) {
