@@ -13,7 +13,7 @@ metadata {
         
     }
     preferences {
-        input name: "IPAddress", type: "string", title: "IP Address of the ESP device", required: true, defaultValue: "192.168.0.157"
+        input name: "IPAddress", type: "string", title: "IP Address of the ESP device", required: true, defaultValue: "192.168.0.1"
         input name: "servoclose", type: "number", title: "Close position of the servo", required: true, defaultValue: "95"
         input name: "servoopen", type: "number", title: "Open position of the servo", required: true, defaultValue: "75"
     }
