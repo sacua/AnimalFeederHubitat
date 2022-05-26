@@ -18,19 +18,21 @@ Servo myservo;
 void handleSentVar() {
   if (server.hasArg("food_weight")) { // this is the variable sent from the client
     int food = server.arg("food_weight").toInt();
+    int openpos = server.arg("openpos").toInt();
+    int closepos = server.arg("closepos").toInt();
     server.send(200, "text/html", "Data received");
-    
+
     scale.power_up();
     delay(400);
     scale.tare();
     float weight = scale.get_units();
     unsigned long runtime = 0;
     unsigned long currenttime = millis();
-    myservo.attach(4,900,2100);  // attaches the servo on GIO2 to the servo object
+    myservo.attach(4, 900, 2100); // attaches the servo on GIO2 to the servo object
     while (weight < food && runtime < 60000) {
-      myservo.write(75); //open
+      myservo.write(openpos); //open
       delay(100);
-      myservo.write(95); //close
+      myservo.write(closepos); //close
       delay(100);
       weight = scale.get_units();
       runtime = millis() - currenttime;
@@ -42,18 +44,18 @@ void handleSentVar() {
     }
     myservo.detach(); //To ensure that the servo applied no torque while in rest and reduce power consumption
     scale.power_down(); //Reduce power consumption
-  
+
   } else if (server.hasArg("servo")) { // this is the variable sent from the client
     int servopos = server.arg("servo").toInt();
     server.send(200, "text/html", "Data received");
-    myservo.attach(4,900,2100);  // attaches the servo on GIO2 to the servo object
+    myservo.attach(4, 900, 2100); // attaches the servo on GIO2 to the servo object
     myservo.write(servopos);
     delay(200);
     myservo.detach();
- 
+
   } else if (server.hasArg("feedSuccess")) { // this is the variable sent from the client
     server.send(200, "text/html", feedSuccess);
-  
+
   } else if (server.hasArg("readweight")) { // this is the variable sent from the client
     scale.power_up();
     delay(500);
@@ -74,15 +76,10 @@ void setup() {
 
   server.on("/data/", HTTP_GET, handleSentVar); // when the server receives a request with /data/ in the string then run the handleSentVar function
   server.begin();
-  
+
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
   scale.set_scale(calibration_factor); //The reading is divided by this value when get_units is call
   scale.power_down();
-
-  myservo.attach(4,900,2100);  // attaches the servo on GIO2 to the servo object
-  myservo.write(95); //put to servo in close position at setup
-  delay(200);
-  myservo.detach();
 }
 
 void loop() {
