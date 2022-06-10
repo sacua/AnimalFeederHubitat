@@ -37,11 +37,7 @@ void handleSentVar() {
       weight = scale.get_units();
       runtime = millis() - currenttime;
     }
-    if (runtime < 60000) {
-      feedSuccess = "Success";
-    } else {
-      feedSuccess = "Fail";
-    }
+    feedSuccess = String(weight);
     myservo.detach(); //To ensure that the servo applied no torque while in rest and reduce power consumption
     scale.power_down(); //Reduce power consumption
 
