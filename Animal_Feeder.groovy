@@ -1,9 +1,9 @@
 metadata {
-    definition (name: "Cat-Dog Feeder", namespace: "sacua", author: "Samuel Cuerrier Auclair") {
+    definition (name: "Cat-dog Feeder", namespace: "sacua", author: "Samuel Cuerrier Auclair") {
         capability "Actuator"
         
         attribute "response", "string"
-        attribute "foodGiven", "string"
+        attribute "foodGiven", "number"
         
         command "GiveFood", ["number"]
         command "servo", ["number"]
@@ -13,7 +13,7 @@ metadata {
         
     }
     preferences {
-        input name: "IPAddress", type: "string", title: "IP Address of the ESP device", required: true, defaultValue: "192.168.0.1"
+        input name: "IPAddress", type: "string", title: "IP Address of the ESP device", required: true, defaultValue: "192.168.0.157"
         input name: "servoclose", type: "number", title: "Close position of the servo", required: true, defaultValue: "95"
         input name: "servoopen", type: "number", title: "Open position of the servo", required: true, defaultValue: "75"
     }
@@ -97,12 +97,15 @@ def calibrate(weight) {
 }
 
 def FoodGiven() {
+    float foodgiven;
     try {
         def params = [uri: "http://"+ IPAddress + "/data/?feedSuccess=0"]
         
         httpGet(params) { resp ->
             if (resp.success) {
-                sendEvent(name: "foodGiven", value: resp.data);
+                foodgiven = resp.data.toFloat();
+                foodgiven = foodgiven/state.calibrationFactor;
+                sendEvent(name: "foodGiven", value: foodgiven);
             }
         }
     }
